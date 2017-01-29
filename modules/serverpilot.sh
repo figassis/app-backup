@@ -8,9 +8,8 @@ source $PARENT/includes/functions.sh
 source $PARENT/local/backup.ini
 #Also add include/exclude strings
 #excludes="--exclude=$dir1 --exclude=$dir2"
-#EXCLUDES="--exclude=public/wp-content/cache"
-#SERVERPILOT=/srv/users
-SERVERPILOT=$PARENT/srv/users
+EXCLUDES=
+SERVERPILOT=/srv/users
 
 #Setup Variables
 CONFIG=backup.json
@@ -23,6 +22,7 @@ for pilot in $SERVERPILOT/{.,}*; do
     
     for app in $pilot/apps/{.,}*; do
         
+        if [ "$MODE" == "incremental" ]; then EXCLUDES="--exclude=$app/public/wp-content/cache"; fi
         temp=`basename $app`
         if [ "$temp" == "." ] || [ "$temp" == ".." ]; then continue; fi
         
@@ -37,14 +37,14 @@ for pilot in $SERVERPILOT/{.,}*; do
 
             if [ ! -n "$database" ] || [ ! -n "$user" ] || [ ! -n "$password" ]; then
                 echo "Backing up $temp without a database" && echo
-                $PARENT/backup/$MODE.sh $app --exclude=$app/public/wp-content/cache
+                $PARENT/backup/$MODE.sh $app $EXCLUDES
             else
                 echo "Backing up $temp with database $database" && echo
-                $PARENT/backup/$MODE.sh $app --exclude=$app/public/wp-content/cache $database $user $password
+                $PARENT/backup/$MODE.sh $app $EXCLUDES $database $user $password
             fi
         else
             echo "Backing up $temp without a database" && echo
-            $PARENT/backup/$MODE.sh $app --exclude=$app/public/wp-content/cache
+            $PARENT/backup/$MODE.sh $app $EXCLUDES
         fi    
     done
 done

@@ -40,8 +40,7 @@ DBNAME="${APPNAME}_$DATE.sql"
 DEST="s3://s3.amazonaws.com/$AWS_BUCKET/$APPNAME"
 
 if [ -n "$DATABASE" ] && [ -n "$USER" ] && [ -n "$PASS" ]; then
-#    mysqldump --lock-tables -u $USER -p$PASS $DATABASE > $APPDIR/$DBNAME
-    echo "akjbhjabdjlnak.jdlikebde,bdjkweqhbdujhbdlbqw" > $APPDIR/$DBNAME
+    mysqldump --lock-tables -u $USER -p$PASS $DATABASE > $APPDIR/$DBNAME
     gzip $APPDIR/$DBNAME
 fi
 
@@ -68,19 +67,17 @@ if [ $is_running -eq 0 ]; then
 
     trace "... removing old backups"
 
-    #duplicity $REMOVE $DEST >> $PARENT/$DAILYLOGFILE 2>&1
-    echo "duplicity $REMOVE $DEST >> $PARENT/$DAILYLOGFILE 2>&1"
-
+    duplicity $REMOVE $DEST >> $PARENT/$DAILYLOGFILE 2>&1
+    
     trace "... backing up $app"
 
-    #duplicity $FULL $EXCLUDES --allow-source-mismatch --s3-use-rrs $SOURCE $DEST >> $PARENT/$DAILYLOGFILE 2>&1
-    echo "duplicity $FULL $EXCLUDES --allow-source-mismatch --s3-use-rrs $SOURCE $DEST >> $PARENT/$DAILYLOGFILE 2>&1"
-
+    duplicity $FULL $EXCLUDES --allow-source-mismatch --s3-use-rrs $SOURCE $DEST >> $PARENT/$DAILYLOGFILE 2>&1
+    
     trace "Backup for $APPNAME complete"
     trace "------------------------------------"
 
     # Send the daily log file by email
-    #cat "$DAILYLOGFILE" | mail -s "Duplicity Backup Log for $HOST - $DATE" $MAILADDR
+    cat "$DAILYLOGFILE" | mail -s "Duplicity Backup Log for $HOST - $DATE" $MAILADDR
     BACKUPSTATUS=`cat "$PARENT/$DAILYLOGFILE" | grep Errors | awk '{ print $2 }'`
     if [ "$BACKUPSTATUS" != "0" ]; then
 	   cat "$PARENT/$DAILYLOGFILE" | mail -s "Duplicity Backup Log for $HOST - $DATE" $EMAIL
@@ -95,5 +92,5 @@ if [ $is_running -eq 0 ]; then
     unset AWS_ACCESS_KEY_ID
     unset AWS_SECRET_ACCESS_KEY
     unset PASSPHRASE
-    rm -f $APPDIR/$DBNAME.gz
+    [ -f $APPDIR/$DBNAME.gz ] && rm -f $APPDIR/$DBNAME.gz
 fi

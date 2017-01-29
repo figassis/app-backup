@@ -1,8 +1,0 @@
-{
-        "database": "alfeus",
-        "type": "mysql",
-        "host" : "localhost",
-        "port" : "3306",
-        "user" : "49004782889c",
-        "pass" : "c3e78d0d67281fd7"
-}
