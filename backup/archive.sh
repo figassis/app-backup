@@ -15,9 +15,9 @@ USER=
 PASS=
 
 if [ $# -eq 4 ]; then
-    DATABASE=$3
-    USER=$4
-    PASS=$5
+    DATABASE=$2
+    USER=$3
+    PASS=$4
 fi
 
 # Export some ENV variables so you don't have to type anything

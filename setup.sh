@@ -15,7 +15,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 sudo apt-add-repository -y ppa:duplicity-team/ppa
 sudo add-apt-repository -y ppa:chris-lea/python-boto
 sudo apt-get update
-sudo apt-get install -y build-essential python-pip python-rrdtool python-mysqldb python-dev libcairo2-dev ibpango1.0-dev librrd-dev libxml2-dev libxslt-dev zlib1g-dev duplicity python-boto
+sudo apt-get install -y build-essential python-pip python-rrdtool python-mysqldb python-dev libcairo2-dev ibpango1.0-dev librrd-dev libxml2-dev libxslt-dev zlib1g-dev duplicity python-boto mailutils
+yes | sudo pip install --upgrade pip
 yes | sudo pip install awscli
 
 #Chekc if running on OSX or Linux
@@ -28,7 +29,7 @@ esac
 
 
 #Create configurations
-rm -rf local && mkdir local
+rm -rf local && mkdir local && mkdir -p log
 cp conf/backup.ini local/backup.ini
 cp conf/schedule.txt local/schedule.txt
 
