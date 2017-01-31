@@ -3,6 +3,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PARENT=$(dirname -- "$DIR")
 source $PARENT/local/backup.ini
+echo "source $PARENT/local/backup.ini"
 
 if [ $# -ne 1 ] && [ $# -ne 4 ]; then
     echo Usage: $0 app_dir [db db_user db_pass]
@@ -21,22 +22,22 @@ if [ $# -eq 4 ]; then
 fi
 
 # Export some ENV variables so you don't have to type anything
-export AWS_ACCESS_KEY_ID
-export AWS_SECRET_ACCESS_KEY
-export AWS_DEFAULT_REGION
-export AWS_DEFAULT_OUTPUT
+export AWS_ACCESS_KEY_ID=$AWS_KEY_ID
+export AWS_SECRET_ACCESS_KEY=$AWS_ACCESS_KEY
+export AWS_DEFAULT_REGION=$AWS_REGION
+export AWS_DEFAULT_OUTPUT=$AWS_OUTPUT
 
-DATE=`date +%d-%m-%Y`
+DATE=`date +%m-%d-%Y`
 HOST=`hostname`
 APPNAME=`basename $APPDIR`
 BACKUP_NAME="${APPNAME}_$DATE.tar.gz"
 DBNAME="${APPNAME}_$DATE.sql"
 
 # The S3 destination followed by bucket name
-DEST="s3://s3.amazonaws.com/$AWS_BUCKET/$APPNAME"
+DEST="s3://$AWS_BUCKET/$APPNAME"
 
 # Create temp folder
-rm -rf $PARENT/temp && mkdir $PARENT/temp
+rm -rf $PARENT/temp && mkdir $PARENT/temp && mkdir -p $PARENT/log
 TEMP=$PARENT/temp
 
 if [ ! -z "$DATABASE" ] && [ ! -z "$USER" ] && [ -z "$PASS" ]; then
@@ -45,7 +46,7 @@ if [ ! -z "$DATABASE" ] && [ ! -z "$USER" ] && [ -z "$PASS" ]; then
 fi
 
 
-tar -cf $TEMP/$BACKUP_NAME $APPDIR
+[ -d $APPDIR ] && tar -cf $TEMP/$BACKUP_NAME $APPDIR
 [ -f $APPDIR/$DBNAME.gz ] && rm $APPDIR/$DBNAME.gz
 
 touch $PARENT/$FULLBACKLOGFILE
@@ -58,7 +59,7 @@ cat /dev/null > $PARENT/${DAILYLOGFILE}
     }
 
     trace "Backup for $APPNAME started"
-
+	
     aws s3 cp $TEMP/$BACKUP_NAME $DEST/$BACKUP_NAME >> $PARENT/$DAILYLOGFILE 2>&1
     
     trace "Backup for $APPNAME complete"
@@ -75,6 +76,6 @@ cat /dev/null > $PARENT/${DAILYLOGFILE}
     cat "$PARENT/$DAILYLOGFILE" >> $PARENT/$LOGFILE
 
     # Reset the ENV variables. Don't need them sitting around
-unset AWS_ACCESS_KEY_ID
-unset AWS_SECRET_ACCESS_KEY
-unset PASSPHRASE
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset PASSPHRASE

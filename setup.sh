@@ -1,12 +1,12 @@
 #!/bin/bash
 if [ $# -ne 5 ]; then
-    echo Usage: $0 module mode email aws_key_id aws_key
+    echo Usage: $0 module mode bucket aws_key_id aws_key
     exit 1
 fi
 
 MODULE=$1
 MODE=$2
-EMAIL=$3
+BUCKET=$3
 KEY_ID=$4
 KEY=$5
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -25,11 +25,8 @@ case "$OSTYPE" in
   *)        tempfile="" ;;
 esac
 
-
-
-
 #Create configurations
-rm -rf local && mkdir local && mkdir -p log
+rm -rf local log restore temp && mkdir local && mkdir -p log
 cp conf/backup.ini local/backup.ini
 cp conf/schedule.txt local/schedule.txt
 
@@ -39,7 +36,7 @@ sed -i $tempfile 's|backup_mode|'$MODE'|g' local/backup.ini
 sed -i $tempfile 's|aws_key_id|'$KEY_ID'|g' local/backup.ini
 sed -i $tempfile 's|aws_key|'$KEY'|g' local/backup.ini
 sed -i $tempfile 's|backup_module|'$MODULE'|g' local/backup.ini
-sed -i $tempfile 's|backup_email|'$EMAIL'|g' local/backup.ini
+sed -i $tempfile 's|bucket_name|'$BUCKET'|g' local/backup.ini
 sed -i $tempfile 's|backup_module|'$MODULE'|g' local/schedule.txt
 openssl rand -base64 32 | tr -d /=+ | cut -c -30 > local/password.txt
 

@@ -1,13 +1,11 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PARENT=$(dirname -- "$DIR")
+PARENT=$(dirname -- "$(dirname -- "$DIR")")
 
 echo $MODE
 echo $MODULE
 source $PARENT/includes/functions.sh
 source $PARENT/local/backup.ini
-#Also add include/exclude strings
-#excludes="--exclude=$dir1 --exclude=$dir2"
 EXCLUDES=
 SERVERPILOT=/srv/users
 

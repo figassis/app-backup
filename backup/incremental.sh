@@ -26,11 +26,12 @@ if [ $# -eq 5 ]; then
 fi
 
 # Export some ENV variables so you don't have to type anything
-export AWS_ACCESS_KEY_ID
-export AWS_SECRET_ACCESS_KEY
+
+export AWS_ACCESS_KEY_ID=$AWS_KEY_ID
+export AWS_SECRET_ACCESS_KEY=$AWS_ACCESS_KEY
 export PASSPHRASE=`cat local/password.txt`
 
-DATE=`date +%d-%m-%Y`
+DATE=`date +%m-%d-%Y`
 HOST=`hostname`
 APPNAME=`basename $APPDIR`
 BACKUP_NAME="${APPNAME}_$DATE.tar.gz"
@@ -77,7 +78,7 @@ if [ $is_running -eq 0 ]; then
     trace "------------------------------------"
 
     # Send the daily log file by email
-    cat "$DAILYLOGFILE" | mail -s "Duplicity Backup Log for $HOST - $DATE" $MAILADDR
+    cat "$DAILYLOGFILE" | mail -s "Duplicity Backup Log for $HOST - $DATE" $EMAIL
     BACKUPSTATUS=`cat "$PARENT/$DAILYLOGFILE" | grep Errors | awk '{ print $2 }'`
     if [ "$BACKUPSTATUS" != "0" ]; then
 	   cat "$PARENT/$DAILYLOGFILE" | mail -s "Duplicity Backup Log for $HOST - $DATE" $EMAIL
@@ -92,5 +93,6 @@ if [ $is_running -eq 0 ]; then
     unset AWS_ACCESS_KEY_ID
     unset AWS_SECRET_ACCESS_KEY
     unset PASSPHRASE
+
     [ -f $APPDIR/$DBNAME.gz ] && rm -f $APPDIR/$DBNAME.gz
 fi
