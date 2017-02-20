@@ -40,7 +40,7 @@ DEST="s3://$AWS_BUCKET/$APPNAME"
 rm -rf $PARENT/temp && mkdir $PARENT/temp && mkdir -p $PARENT/log
 TEMP=$PARENT/temp
 
-if [ ! -z "$DATABASE" ] && [ ! -z "$USER" ] && [ ! -z "$PASS" ]; then
+if [ -n "$DATABASE" ] && [ -n "$USER" ] && [ -n "$PASS" ]; then
     mysqldump --lock-tables -u $USER -p$PASS $DATABASE > $APPDIR/$DBNAME
     gzip $APPDIR/$DBNAME
 fi
