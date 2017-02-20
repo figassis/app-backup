@@ -25,6 +25,7 @@ elif [ "$MODE" == "archive" ]; then
 
     DEST="s3://$AWS_BUCKET/$APPNAME/$BACKUP_NAME"
     aws s3 cp $DEST $PARENT/restore
+    exit
     [ -f "$PARENT/restore/$BACKUP_NAME" ] && cd $PARENT/restore && tar -xf $BACKUP_NAME && rm -f $BACKUP_NAME
     PUBLIC=`find $PARENT/restore -name "public" -type d -print -quit`
     echo $PUBLIC
