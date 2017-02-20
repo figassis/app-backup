@@ -41,4 +41,4 @@ sed -i $tempfile 's|backup_module|'$MODULE'|g' local/schedule.txt
 openssl rand -base64 32 | tr -d /=+ | cut -c -30 > local/password.txt
 
 rm -f local/*.bak
-sudo cp local/schedule.txt /etc/cron.d/backups
+sudo cp local/schedule.txt /etc/cron.daily/backups
