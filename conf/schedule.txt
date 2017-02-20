@@ -1,2 +1,2 @@
 # Backup job
-0	1	*	*	*	root	cd home_dir && modules/backup_module/backup.sh
+0	1	*	*	*	root    cd home_dir && modules/backup_module/backup.sh 2> home_dir/log.txt
